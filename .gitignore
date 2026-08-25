@@ -1,0 +1,26 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment secrets
+.env
+
+# Spark / Hadoop local junk
+*.log
+metastore_db/
+derby.log
+spark-warehouse/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Large generated data - never commit this
+tools/synthea/output/
+tools/synthea/*.jar
