@@ -170,6 +170,39 @@ Keep the repo and all Hadoop/Spark files inside the WSL file system (e.g. `~/pro
 
 ---
 
+## Python environment (all OSes)
+
+Once Java/Hadoop/Spark are set up, each person also needs a Python virtual environment for the project's own code — this keeps its packages separate from anything else on your machine.
+
+Run this from the repo root, on any OS (macOS/Linux terminal, or WSL for Windows):
+
+```bash
+# 1. Confirm Python is installed (3.9+ is fine)
+python3 --version
+# if missing on Linux/WSL: sudo apt install python3 python3-venv python3-pip -y
+# if missing on macOS: brew install python3
+
+# 2. Create a virtual environment for this project
+python3 -m venv venv
+
+# 3. Activate it (do this every time you open a new terminal to work on the project)
+source venv/bin/activate
+# your prompt should now start with (venv)
+
+# 4. Install what the project needs
+pip install pyspark cryptography
+
+# 5. Keep the venv folder out of git
+echo "venv/" >> .gitignore
+```
+
+`venv/` is machine-specific — never commit it. If the project grows a `requirements.txt`, install from that instead of listing packages by hand:
+```bash
+pip install -r requirements.txt
+```
+
+---
+
 ## Confirming you're ready
 
 Everyone should be able to run this and see it succeed before writing any pipeline code:
@@ -203,4 +236,3 @@ Run them all with:
 ```bash
 pytest
 ```
-
