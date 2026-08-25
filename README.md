@@ -165,6 +165,11 @@ cd frontend && npm start             # terminal 2
 
 ---
 
+## Getting started
+See [SETUP.md](./SETUP.md) for environment setup (Linux/macOS/Windows).
+
+---
+
 ## 6. Team split (suggested)
 
 | Area | Tasks | Depends on |
