@@ -10,7 +10,7 @@ ROLES = {
     "clinician": {
         "can_view_phi": True,
         "allowed_tables": "*",
-    }
+    },
       "analyst": {
         "can_view_phi": False,
         "allowed_tables": "*",
@@ -26,9 +26,9 @@ def can_view_phi(role: str) -> bool:
         return False
     return ROLES[role]["can_view_phi"]
 
-def can_access_table(role: str, table: str) -> bool;
+def can_access_table(role: str, table: str) -> bool:
     """Whether this role is allowed to query this table (PHI or not)."""
-     if role not in ROLES:
+    if role not in ROLES:
         return False
     allowed = ROLES[role]["allowed_tables"]
     return allowed == "*" or table in allowed
