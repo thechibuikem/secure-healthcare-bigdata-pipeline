@@ -166,10 +166,10 @@ cd frontend && npm start             # terminal 2
 ---
 
 ## Getting started
-See [SETUP.md](./SETUP.md) for environment setup (Linux/macOS/Windows).
+See [SETUP.md](./docs/SETUP.md) for environment setup (Linux/macOS/Windows).
 
 ---
-
+<!-- 
 ## 6. Team split (suggested)
 
 | Area | Tasks | Depends on |
@@ -181,6 +181,6 @@ See [SETUP.md](./SETUP.md) for environment setup (Linux/macOS/Windows).
 | Access control + logging | TASK-4 | TASK-3 |
 | Summary reports | TASK-5 | TASK-2 |
 | Integration + demo prep | TASK-6 | everything |
-| Frontend (React + API) | TASK-7 | TASK-4, TASK-5 |
+| Frontend (React + API) | TASK-7 | TASK-4, TASK-5 | -->
 
-Full detail on every task — steps, what "done" looks like, files to create — is in the requirements doc.
+Full detail on every task — steps, what "done" looks like, files to create — is in the requirements [doc](https://drive.google.com/file/d/17-i1-uDLAVAwkXn2gOpycPYVlnKJwNOZ/view?usp=sharing).
