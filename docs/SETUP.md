@@ -2,6 +2,8 @@
 
 Everyone on the team needs Java, Hadoop, and Spark installed and running before touching the pipeline code. Pick your OS below. Windows users: use WSL (Windows Subsystem for Linux) — Hadoop does not run well natively on Windows, so we treat WSL as "Linux" for this setup.
 
+**Versions used here:** Hadoop 3.5.0, Spark 3.5.9. Spark also has a newer 4.x line, but we stay on 3.5.x — it's the long-term-support branch (patched through late 2027) and has far more tutorials/Stack Overflow coverage than 4.x, which matters more for a course project than being on the newest release.
+
 ---
 
 ## Linux
@@ -19,9 +21,9 @@ Copy the path shown, minus the trailing `/bin/java`. Example: `/usr/lib/jvm/java
 
 ### 2. Download and configure Hadoop
 ```bash
-wget https://downloads.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
-tar -xzf hadoop-3.3.6.tar.gz -C ~/
-mv ~/hadoop-3.3.6 ~/hadoop
+wget https://downloads.apache.org/hadoop/common/hadoop-3.5.0/hadoop-3.5.0.tar.gz
+tar -xzf hadoop-3.5.0.tar.gz -C ~/
+mv ~/hadoop-3.5.0 ~/hadoop
 ```
 Add to `~/.bashrc`:
 ```bash
@@ -54,9 +56,9 @@ You can also check `http://localhost:9870` in a browser.
 
 ### 5. Download and configure Spark
 ```bash
-wget https://downloads.apache.org/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz
-tar -xzf spark-3.5.1-bin-hadoop3.tgz -C ~/
-mv ~/spark-3.5.1-bin-hadoop3 ~/spark
+wget https://downloads.apache.org/spark/spark-3.5.9/spark-3.5.9-bin-hadoop3.tgz
+tar -xzf spark-3.5.9-bin-hadoop3.tgz -C ~/
+mv ~/spark-3.5.9-bin-hadoop3 ~/spark
 ```
 Add to `~/.bashrc`:
 ```bash
@@ -202,5 +204,3 @@ Run them all with:
 pytest
 ```
 
-### What we don't test
-We're not testing HDFS itself, or Spark itself — those are Apache's job, not ours. We're only testing *our* code: the logic in our scripts, using small fake data, run locally. Nobody needs a real cluster or real patient-scale data to run the test suite.
