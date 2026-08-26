@@ -108,3 +108,42 @@ def process_table(spark, table: str, run_date: str) -> dict:
         "rejected": rejected_count,
         "written": valid_count,
     }
+
+def run(run_date: str):
+    """
+    Orchestrates the entire ETL pipeline execution across all defined tables for a given run date.
+    """
+    # Initialize a localized PySpark session
+    spark = get_spark_session("etl-validate-and-clean")
+
+    print(f"[start] processing run_date={run_date}")
+    results = []
+
+    # Loop through each table configuration, execute the pipeline, and track metrics
+    for table in TABLES:
+        result = process_table(spark, table, run_date)
+        results.append(result)
+        print(f"[{table}] read={result['read']} valid={result['valid']} "
+              f"rejected={result['rejected']} written={result['written']}")
+
+    # Clean up and shut down the Spark instance
+    spark.stop()
+
+    # Safety check: Ensure at least some data was successfully written across the pipeline
+    total_written = sum(r["written"] for r in results)
+    if total_written == 0:
+        print("[error] no rows were written for any table - check /raw path and run_date.")
+        sys.exit(1)
+
+    print(f"[done] wrote {total_written} total rows across {len(results)} tables.")
+
+
+if __name__ == "__main__":
+    # Set up command-line argument parsing to require a target date (e.g., --date 2026-08-26)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--date", required=True, help="Run date, YYYY-MM-DD, matching a folder under /raw")
+    args = parser.parse_args()
+
+    # Kick off the ETL process
+    run(args.date)
+    
