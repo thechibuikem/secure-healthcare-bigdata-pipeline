@@ -21,6 +21,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Prevets nexted git
+tools/synthea/
+
 # Large generated data - never commit this
 tools/synthea/output/
 tools/synthea/*.jar
