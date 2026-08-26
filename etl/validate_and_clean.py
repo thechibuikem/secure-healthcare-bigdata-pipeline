@@ -44,3 +44,14 @@ def split_valid_invalid(df, table: str):
     valid_df = df.filter(~condition)
     
     return valid_df, invalid_df
+
+def dedupe(df, table: str):
+    """
+    Removes duplicate records from the DataFrame.
+    - If specific deduplication keys are configured for the table, drops duplicates based on those columns.
+    - Otherwise, falls back to dropping duplicates across the entire row.
+    """
+    keys = get_dedupe_keys(table)
+    if keys:
+        return df.dropDuplicates(keys)
+    return df.dropDuplicates()
