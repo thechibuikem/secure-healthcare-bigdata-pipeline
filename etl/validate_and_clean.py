@@ -55,3 +55,56 @@ def dedupe(df, table: str):
     if keys:
         return df.dropDuplicates(keys)
     return df.dropDuplicates()
+
+def process_table(spark, table: str, run_date: str) -> dict:
+    """
+    Processes a single table's dataset for a specific date:
+    Reads raw CSV -> Validates -> Logs rejects -> Dedupes -> Encrypts PHI -> Writes Parquet.
+    Returns a dictionary summary of processing counts.
+    """
+    raw_path = f"/raw/{run_date}/{table}.csv"
+
+    # Attempt to read the raw CSV dataset from HDFS/storage
+    try:
+        df = spark.read.option("header", "true").csv(raw_path)
+    except Exception as e:
+        print(f"[skip] could not read {raw_path}: {e}")
+        return {"table": table, "read": 0, "valid": 0, "rejected": 0, "written": 0}
+
+    read_count = df.count()
+
+    # Split rows into valid and invalid based on mandatory fields
+    valid_df, invalid_df = split_valid_invalid(df, table)
+    rejected_count = invalid_df.count()
+
+    # If there are bad records, persist them to the rejects zone as JSON files
+    if rejected_count > 0:
+        reject_path = f"/raw/_rejects/{run_date}/{table}"
+        invalid_df.write.mode("overwrite").json(reject_path)
+
+    # Deduplicate the valid records
+    deduped_df = dedupe(valid_df, table)
+    valid_count = deduped_df.count()
+
+    # Encrypt all designated Protected Health Information (PHI) columns
+    encrypted_df = encrypt_phi_columns(deduped_df, table)
+
+    # Write clean, encrypted data into the curated zone, partitioned by run_date
+    curated_path = f"/curated/{table}"
+    (
+        encrypted_df
+        .withColumn("run_date", lit(run_date))
+        .write
+        .mode("overwrite")
+        .partitionBy("run_date")
+        .parquet(curated_path) #group data by type (column)
+    )
+
+    # Return summary metrics for reporting
+    return {
+        "table": table,
+        "read": read_count,
+        "valid": valid_count,
+        "rejected": rejected_count,
+        "written": valid_count,
+    }
