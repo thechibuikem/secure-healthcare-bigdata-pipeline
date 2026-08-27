@@ -2,17 +2,17 @@
 Main Spark ETL job (TASK-2). Reads /raw/{run_date}/, validates each table,
 rejects bad rows to /raw/_rejects, deduplicates, encrypts PHI columns, and writes clean Parquet to /curated/{table}/run_date={date}/.
 """
-
+import os
 import argparse
 import sys
 
 from pyspark.sql.functions import col, lit
-
-from shared.spark_session import get_spark_session
+from shared.config.spark_session import get_spark_session
 from shared.config.phi_fields import PHI_FIELDS
 from security.encryption import encrypt_phi_columns
 from etl.schemas import get_required_columns, get_dedupe_keys
 
+HDFS_NAMENODE = os.environ.get("HDFS_NAMENODE", "hdfs://localhost:9000")
 # Dynamically pull all table names from your PHI fields configuration dictionary
 TABLES = list(PHI_FIELDS.keys())
 
@@ -62,7 +62,7 @@ def process_table(spark, table: str, run_date: str) -> dict:
     Reads raw CSV -> Validates -> Logs rejects -> Dedupes -> Encrypts PHI -> Writes Parquet.
     Returns a dictionary summary of processing counts.
     """
-    raw_path = f"/raw/{run_date}/{table}.csv"
+    raw_path = f"{HDFS_NAMENODE}/raw/{run_date}/{table}.csv"
 
     # Attempt to read the raw CSV dataset from HDFS/storage
     try:
@@ -79,7 +79,7 @@ def process_table(spark, table: str, run_date: str) -> dict:
 
     # If there are bad records, persist them to the rejects zone as JSON files
     if rejected_count > 0:
-        reject_path = f"/raw/_rejects/{run_date}/{table}"
+        reject_path = f"{HDFS_NAMENODE}/raw/_rejects/{run_date}/{table}"
         invalid_df.write.mode("overwrite").json(reject_path)
 
     # Deduplicate the valid records
@@ -90,7 +90,7 @@ def process_table(spark, table: str, run_date: str) -> dict:
     encrypted_df = encrypt_phi_columns(deduped_df, table)
 
     # Write clean, encrypted data into the curated zone, partitioned by run_date
-    curated_path = f"/curated/{table}"
+    curated_path = f"{HDFS_NAMENODE}/curated/{table}"
     (
         encrypted_df
         .withColumn("run_date", lit(run_date))
