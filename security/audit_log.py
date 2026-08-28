@@ -50,3 +50,35 @@ def log_access(role: str, table: str, columns: list[str], allowed: bool) -> None
     # If the audit log file does not exist yet, create it by uploading the temporary file.
     if not exists:
         subprocess.run(["hdfs", "dfs", "-put", tmp_path, AUDIT_LOG_PATH], check=True)
+
+def read_audit_log() -> list[dict]:
+    """
+    Reads back and parses every audit entry from HDFS.
+    Used by the administrative API and frontend interface to display audit history.
+    """
+    result = subprocess.run(
+        ["hdfs", "dfs", "-cat", AUDIT_LOG_PATH],
+        capture_output=True, text=True,
+    )
+
+    # Return an empty list if the log file cannot be read or doesn't exist
+    if result.returncode != 0:
+        return []
+    
+    # Filter out empty lines and parse each JSON line back into a dictionary
+    lines = [l for l in result.stdout.splitlines() if l.strip()]
+    return [json.loads(l) for l in lines]
+
+    # Split the output into individual lines and drop any empty ones
+    raw_lines = result.stdout.splitlines()
+    lines = []
+    for l in raw_lines:
+        if l.strip(): # evals to false on ""
+            lines.append(l)
+
+    # Convert each JSON string line back into a dictionary
+    parsed_entries = []
+    for l in lines:
+        parsed_entries.append(json.loads(l))
+
+    return parsed_entries
