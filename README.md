@@ -149,13 +149,17 @@ start-dfs.sh
 # 1. Generate fake patient data
 cd tools/synthea && ./run_synthea -p 1000
 
-# 2. Load it into HDFS
-python ingestion/load_to_hdfs.py --date 2026-08-25
+# 2. Load your envars
+export $(grep -v '^#' .env | xargs)
 
-# 3. Clean + encrypt it
-spark-submit etl/validate_and_clean.py --date 2026-08-25
+# 3. Load it into HDFS
+python ingestion.load_to_hdfs.py --date YYYY-08-25
 
-# 4. Build summary reports
+# 4. Clean + encrypt it
+# spark-submit etl/validate_and_clean.py --date 2026-08-25
+python3 -m etl.validate_and_clean --date 2026-08-26
+
+# 5. Build summary reports
 spark-submit analytics/aggregates.py --date 2026-08-25
 
 # 5. Start the demo (two terminals)
