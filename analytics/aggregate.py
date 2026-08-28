@@ -63,3 +63,43 @@ def encounter_volume_by_month(spark, run_date: str):
     )
     return result
 
+
+def medication_trend(spark, run_date: str):
+    medications = spark.read.parquet(f"{HDFS_NAMENODE}/curated/medications")
+
+    result = (
+        medications
+        .groupBy("DESCRIPTION")
+        .agg(count("*").alias("prescription_count"))
+        .orderBy(col("prescription_count").desc())
+    )
+
+    result.write.mode("overwrite").parquet(
+        f"{HDFS_NAMENODE}/marts/medication_trend/run_date={run_date}"
+    )
+    return result
+
+def run(run_date: str):
+    spark = get_spark_session("aggregates")
+
+    print("[1/3] condition prevalence by age band")
+    r1 = condition_prevalence_by_age(spark, run_date)
+    print(f"  wrote {r1.count()} rows")
+
+    print("[2/3] encounter volume by month")
+    r2 = encounter_volume_by_month(spark, run_date)
+    print(f"  wrote {r2.count()} rows")
+
+    print("[3/3] medication trend")
+    r3 = medication_trend(spark, run_date)
+    print(f"  wrote {r3.count()} rows")
+
+    spark.stop()
+    print("[done] all 3 marts written")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--date", default=str(date.today()))
+    args = parser.parse_args()
+    run(args.date)
