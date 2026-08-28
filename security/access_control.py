@@ -4,7 +4,7 @@ it never exposes /curated directly, only through here.
 """
 
 import os
-from shared.spark_session import get_spark_session
+from shared.config.spark_session import get_spark_session
 from shared.config.phi_fields import get_phi_fields
 from shared.config.roles import role_exists, can_access_table, can_view_phi
 from security.decrypt_view import decrypt_if_allowed
@@ -52,3 +52,21 @@ def get_view(role: str, table: str):
     # Log the successful data access event, tracking the user's role, table, and columns returned
     log_access(role, table, columns=returned_columns, allowed=True)
     return df
+
+def request_column(role: str, table: str, column: str):
+    """
+    Explicit single-column request - used by the frontend's 'try a
+    blocked column' demo button. Returns None and logs a denial if the
+    role can't see that column.
+    """
+    phi_columns = get_phi_fields(table)
+    is_phi = column in phi_columns
+    allowed = (not is_phi) or can_view_phi(role)
+
+    log_access(role, table, columns=[column], allowed=allowed)
+
+    if not allowed:
+        return None
+
+    view = get_view(role, table)
+    return view.select(column) if view is not None else None
