@@ -46,3 +46,20 @@ def condition_prevalence_by_age(spark, run_date: str):
     )
     return result
 
+
+def encounter_volume_by_month(spark, run_date: str):
+    encounters = spark.read.parquet(f"{HDFS_NAMENODE}/curated/encounters")
+
+    result = (
+        encounters
+        .withColumn("month", col("START").substr(1, 7))  # YYYY-MM
+        .groupBy("month")
+        .agg(count("*").alias("encounter_count"))
+        .orderBy("month")
+    )
+
+    result.write.mode("overwrite").parquet(
+        f"{HDFS_NAMENODE}/marts/encounter_volume/run_date={run_date}"
+    )
+    return result
+
