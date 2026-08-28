@@ -10,7 +10,7 @@ from datetime import date
 
 from pyspark.sql.functions import col, count, floor, year, to_date
 
-from shared.spark_session import get_spark_session
+from shared.config.spark_session import get_spark_session
 
 HDFS_NAMENODE = os.environ.get("HDFS_NAMENODE", "hdfs://localhost:9000")
 
