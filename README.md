@@ -169,6 +169,16 @@ cd frontend && npm start             # terminal 2
 
 ---
 
+## Running the full demo
+
+./scripts/run_pipeline.sh 2026-08-28
+python3 scripts/check_no_plaintext_phi.py
+
+Then start the frontend (see frontend/README.md) to walk through
+role-gated access and the audit log live.
+
+---
+
 ## Getting started
 See [SETUP.md](./docs/SETUP.md) for environment setup (Linux/macOS/Windows).
 
