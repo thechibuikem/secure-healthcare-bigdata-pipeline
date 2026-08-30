@@ -3,8 +3,6 @@ venv/
 __pycache__/
 *.pyc
 *.pyo
-.pytest_cache
-
 
 # Environment secrets
 .env
@@ -15,17 +13,31 @@ metastore_db/
 derby.log
 spark-warehouse/
 
+# Node / frontend
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+node_modules
+dist
+dist-ssr
+*.local
+
 # OS junk
 .DS_Store
 Thumbs.db
 
 # Editor
-.vscode/
-.idea/
-
-# Prevets nexted git
-tools/synthea/
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # Large generated data - never commit this
-tools/synthea/output/
-tools/synthea/*.jar
+tools/synthea/

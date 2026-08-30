@@ -19,7 +19,7 @@ app = FastAPI(title="Healthcare Pipeline Demo API")
 # allow the React dev server to call this API from the browser
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
