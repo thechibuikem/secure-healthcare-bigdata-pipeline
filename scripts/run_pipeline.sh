@@ -3,7 +3,7 @@
 # Usage: ./scripts/run_pipeline.sh [YYYY-MM-DD]
 # Defaults to today if no date given.
 
-et -e  # stop immediately on any failure, don't continue with a broken chain
+set -e  # stop immediately on any failure, don't continue with a broken chain
 
 DATE="${1:-$(date +%Y-%m-%d)}"
 
@@ -18,7 +18,7 @@ echo "[2/4] Cleaning and encrypting (Spark ETL)..."
 python3 -m etl.validate_and_clean --date "$DATE"
 
 echo "[3/4] Building summary reports..."
-python3 -m analytics.aggregates --date "$DATE"
+python3 -m analytics.aggregate --date "$DATE"
 
 echo "[4/4] Pipeline complete for $DATE."
 echo "Check results with: hdfs dfs -ls /curated  and  hdfs dfs -ls /marts"
