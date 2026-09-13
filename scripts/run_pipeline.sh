@@ -2,7 +2,7 @@
 # Runs the full pipeline end to end for a given date.
 # Usage: ./scripts/run_pipeline.sh [YYYY-MM-DD]
 # Defaults to today if no date given.
-
+#export $(grep -v '^#' .env | xargs)
 set -e  # stop immediately on any failure, don't continue with a broken chain
 
 DATE="${1:-$(date +%Y-%m-%d)}"
@@ -11,7 +11,8 @@ echo "=== Ensure you've exported your environmental variables ==="
 
 echo "=== Running pipeline for $DATE ==="
 
-echo "[1/4] Loading Synthea data into HDFS..."
+echo "[1/4] Loading Synthea data into HDecho "[2/4] Cleaning and encrypting (Spark ETL)..."
+# FS..."
 python3 -m ingestion.load_to_hdfs --date "$DATE"
 
 echo "[2/4] Cleaning and encrypting (Spark ETL)..."
